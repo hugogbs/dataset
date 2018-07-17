@@ -29,3 +29,17 @@ def get_tweets():
 @orm.db_session
 def exist_tweet(tweet_id):
     return Tweet.get(tweet_id=tweet_id) is not None
+
+
+@orm.db_session
+def to_csv():
+    tweets = orm.select(t for t in Tweet)
+
+    df = pd.DataFrame([], columns=['id', 'text', 'sentiment'])
+
+    for tweet in tweets:
+        df_temp = pd.DataFrame([[int(tweet.id), tweet.text, tweet.sentiment]], columns=[
+                               'id', 'text', 'sentiment'])
+        df = df.append(df_temp)
+
+    df.to_csv('db.csv', sep=';', index=False)
